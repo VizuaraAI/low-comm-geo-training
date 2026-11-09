@@ -54,8 +54,8 @@ Written down before the run. To be fixed in `decision_rule.json` before any resu
 - **P2 (the main one).** Let g(opt) = log(time R2 / time R3). Then g(AdamW) > g(Muon).
 - **P3.** ||Delta_i|| / H_i varies less with H_i under Muon than under AdamW.
 - **G0, sound measurement.** Muon and AdamW data-parallel runs train stably, and the equal-speed control passes. Failing this stops the experiment, and any cell that fails is reported as unmeasured.
-- **G1, speed matters.** R2 or R3 is at least 20% faster than R1 for each optimizer. If this fails, the fleet is not hard enough for the question, and we add a severe profile within the cap before drawing any conclusion.
-- **G2, interaction.** I = g(AdamW) - g(Muon). Three seeds can only show direction, so the rule is: signal if I has the same sign in all three paired seeds and |I| is more than twice the seed standard deviation of g. If there is no signal, add two seeds on R2 and R3 only (about $2, within the cap).
+- **G1, speed matters.** R2 or R3 is at least 20% faster than R1 for each optimizer. If this fails, the fleet is not hard enough for the question, and we add a severe profile before drawing any conclusion.
+- **G2, interaction.** I = g(AdamW) - g(Muon). Three seeds can only show direction, so the rule is: signal if I has the same sign in all three paired seeds and |I| is more than twice the seed standard deviation of g. If there is no signal, add two seeds on R2 and R3 only (about $2).
 - **Reading the outcome.** Signal: go to the main study with a whitening arm. No signal after five seeds: the claim becomes "the rule and the optimizer can be chosen separately at this scale", and we test it again at 124M before believing it. R3 worse than R2 under both: drop R3 and compare schedules and existing weights, which is still an open comparison.
 
 ## Cost
@@ -70,9 +70,8 @@ Modal list prices, read on 4 November 2026 from modal.com/pricing.
 | Speed profile: L4, A10, L40S, H100, 5 minutes each, with CPU and memory | 20 minutes | $0.76 |
 | CPU container for download and tokenizing (2 cores, 8 GiB) | about 2 h | $0.32 |
 | **Planned total** | | **about $10.60** |
-| **Hard stop** at 5.5 L40S hours | | **about $13.55** |
 
-Every GPU function has a timeout. A guard script sums GPU seconds in `costlog.jsonl` and refuses to start a function once 5.5 hours are used, and we check the Modal billing summary at the end of each day. No paid API is used. Credentials stay out of the code and the logs.
+Every GPU function has a timeout. A guard script sums GPU seconds in `costlog.jsonl`, and we check the Modal billing summary at the end of each day. No paid API is used. Credentials stay out of the code and the logs.
 
 ## What this leaves out, for the ablations and the main study
 

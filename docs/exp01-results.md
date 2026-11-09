@@ -29,7 +29,7 @@ The evidence outside the verdict points against prediction P2: R3 hurt AdamW mor
 
 ## Why the budget was cut to 60M tokens
 
-The plan assumed 300,000 tokens per second on the L40S. The smoke test measured 176,903 for AdamW and 167,409 for Muon. At these speeds, 120M tokens per run projected to 9.01 L40S hours, well past the 5.5 hour hard stop. The rule in `decision_rule.json` takes the largest budget whose projection, including the two-seed extension, is at most 5.4 hours. That gave 60M tokens per main run and 15M per tuning run, projected at 5.24 hours (`results/budget.json`). This is also the lowest budget the rule allows.
+The plan assumed 300,000 tokens per second on the L40S. The smoke test measured 176,903 for AdamW and 167,409 for Muon. At these speeds, 120M tokens per run projected to 9.01 L40S hours, well past the 5.5 hours the plan allowed. The rule in `decision_rule.json` takes the largest budget whose projection, including the two-seed extension, is at most 5.4 hours. That gave 60M tokens per main run and 15M per tuning run, projected at 5.24 hours (`results/budget.json`). This is also the lowest budget the rule allows.
 
 The plan's speed came from a nanoGPT figure. Our guess is that the full 50,257-token head explains much of the gap, since nanoGPT's benchmark may use a far smaller vocabulary. We did not test this.
 
@@ -131,7 +131,7 @@ These are proposals and have not been run. The rule's outcome points to dropping
 
 ## Cost
 
-Modal billed **$9.78** for this experiment on 4 November across 7 app runs, as read after the last run (`results/billing.json`). Our own estimate from runtime and list prices is $9.58 (`results/costlog.jsonl`). The L40S ran for 4.05 hours, against 4.2 planned and the 5.5 hour hard stop. The plan was about $10.60, with a hard stop at $13.55.
+Modal billed **$9.78** for this experiment on 4 November across 7 app runs, as read after the last run (`results/billing.json`). Our own estimate from runtime and list prices is $9.58 (`results/costlog.jsonl`). The L40S ran for 4.05 hours, against 4.2 planned. The plan was about $10.60.
 
 | Step | Billed |
 |-|-|

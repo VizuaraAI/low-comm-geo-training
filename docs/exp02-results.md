@@ -28,7 +28,7 @@ Everything is Exp01's unless stated here: the fleet, data, model, inner learning
 
 **Outer settings.** Tuning picked (1.0, 0.0) for R3b, the same as R2, and (0.4, 0.8) for R3a, the same as R3, under both optimizers. Each was the outright best in its table, so the anchor rule made no difference. This means R3b against R2, and R3a against R3, each differ in one thing only. R3a against R2 also differs in the outer step.
 
-**Cut rule.** The smoke test projected $5.49 against the $7.50 limit, so nothing was cut. All arms ran at 60M tokens and three seeds.
+**Cut rule.** The smoke test projected $5.49, below the point at which the rule cuts, so nothing was cut. All arms ran at 60M tokens and three seeds.
 
 ## The control and the bridge
 
@@ -166,11 +166,11 @@ R3 itself is better than R3a in every seed, by 0.41 nats with AdamW (0.52, 0.42,
 These are proposals and have not been run.
 
 - Non-i.i.d. shards or unequal batches, which give noise that truly differs between workers. This is the only setting in which adaptive inverse-noise weighting can be tested, and it is already on the plan's list.
-- Seeds 4 and 5 on R2 and R3b would tighten I. They would cost about $2.47 and fit the $8 limit, but the rule does not call for them. That decision belongs to the project lead, along with whether 0.02 is the right minimum size.
+- Seeds 4 and 5 on R2 and R3b would tighten I. They would cost about $2.47, but the rule does not call for them. That decision belongs to the project lead, along with whether 0.02 is the right minimum size.
 
 ## Cost
 
-Modal billed **$4.93** for this experiment across 3 app runs, as read after the last run (`results/billing.json`). Our own estimate from runtime and list prices is $4.86 (`results/costlog.jsonl`). The L40S ran for 2.14 hours. The plan was about $5.50, with the limit at $8 and the hard stop at $9. With Exp01's $9.78, this student's total is $14.71.
+Modal billed **$4.93** for this experiment across 3 app runs, as read after the last run (`results/billing.json`). Our own estimate from runtime and list prices is $4.86 (`results/costlog.jsonl`). The L40S ran for 2.14 hours. The plan was about $5.50. With Exp01's $9.78, the two experiments cost $14.71.
 
 | Step | Billed |
 |-|-|

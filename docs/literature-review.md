@@ -164,12 +164,12 @@ Optional: FedNova for the bias from unequal steps, and SNOO for the warning that
 
 ## 6. First experiment
 
-The plan is in `docs/exp01-plan.md`: AdamW and Muon crossed with three rules, on eight simulated islands with speeds measured on Modal GPUs. Planned cost is about $10.60, with a hard stop under $15.
+The plan is in `docs/exp01-plan.md`: AdamW and Muon crossed with three rules, on eight simulated islands with speeds measured on Modal GPUs. Planned cost is about $10.60.
 
 ## 7. Open scoping questions for the first discussion
 
 - **Which third arm?** SOAP, SPlus or Dobb. [1] favours SOAP and SPlus on quality; they need more memory, and Dobb is cheap per call but its HTML gives no repository link of its own. We suggest SPlus first.
 - **Scope of "outer rule".** We suggest schedule and weights as the main factors, with Nesterov held fixed, and plain averaging as one control. Is that right, given SNOO?
-- **Model and budget.** The brief's 124M model at 20 tokens per parameter is about 2.5B tokens. Our rough estimate is $5 per run on an L40S, so 3 x 3 cells at 5 seeds with baselines would take most of the $300 to $600 before tuning or the live run. We should cut seeds or cells after Exp01.
+- **Model and budget.** The brief's 124M model at 20 tokens per parameter is about 2.5B tokens. Our rough estimate is $5 per run on an L40S, so 3 x 3 cells at 5 seeds with baselines would take most of the project's GPU money before tuning or the live run. We should cut seeds or cells after Exp01.
 - **Link measurements.** Are E2E Networks and Yotta accounts realistic in weeks 1 and 2? Is Modal a meaningful endpoint, given that it is serverless and not on the Indian pool? The simulator can start from published links in the meantime.
 - **A downstream check.** Given the nanochat warning, which short benchmark should accompany validation loss?
