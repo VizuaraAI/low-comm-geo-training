@@ -1,0 +1,6 @@
+numpy==2.2.6
+matplotlib==3.9.2
+torch==2.10.0
+tokenizers==0.22.1
+pyarrow==21.0.0
+huggingface-hub==0.35.3

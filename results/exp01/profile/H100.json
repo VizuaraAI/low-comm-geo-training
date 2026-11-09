@@ -1,0 +1,27 @@
+{
+ "gpu": "H100",
+ "code_sha256": "d55ef0a938637182551b4519be4546166bcdb081d991f19281dd222ebfe7ac9e",
+ "batch": 32,
+ "block": 256,
+ "torch": "2.10.0+cu128",
+ "cuda_name": "NVIDIA H100 80GB HBM3",
+ "driver": "610.57.04",
+ "opts": {
+  "adamw": {
+   "steps": 3525,
+   "seconds": 75.05,
+   "steps_per_s": 46.972,
+   "chunk_min": 46.799,
+   "chunk_max": 47.17,
+   "peak_gib": 6.28
+  },
+  "muon": {
+   "steps": 2900,
+   "seconds": 75.17,
+   "steps_per_s": 38.579,
+   "chunk_min": 35.774,
+   "chunk_max": 40.074,
+   "peak_gib": 6.28
+  }
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "dataset": "wikimedia/wikipedia",
+ "files": {
+  "en": [
+   "20231101.en/train-00000-of-00041.parquet"
+  ],
+  "hi": [
+   "20231101.hi/train-00000-of-00002.parquet",
+   "20231101.hi/train-00001-of-00002.parquet"
+  ]
+ },
+ "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+ "min_chars": 1500,
+ "split_seed": 9009,
+ "tokenizer_sha256": "0e028977af900c45729a7f15809d2aee74928e538d089783140ef285951a5850",
+ "vocab": 50257,
+ "languages": {
+  "en": {
+   "train_tokens": 75000000,
+   "val_tokens": 1000000,
+   "chars_per_token": 4.388,
+   "train_sha256": "5151854e07da7ba7f92caecdfdc6c5c9d0eb5326e94ccf142afcc6aba3b06a35",
+   "val_sha256": "84f54d9cbe3c8a6392985274832ecffa5fda039d00adafdde39775ae92de693b"
+  },
+  "hi": {
+   "train_tokens": 75000000,
+   "val_tokens": 1000000,
+   "chars_per_token": 1.547,
+   "train_sha256": "0ff70be491759f5087939fc15171248ae2702b5a5f3a3551a0dd4e065e22942d",
+   "val_sha256": "ad7ba9c1f9ef183d5378ca7dbb63b4649e404f0f2a4f21df85e854931d73c572"
+  }
+ }
+}

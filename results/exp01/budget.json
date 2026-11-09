@@ -1,0 +1,32 @@
+{
+ "main_tokens": 60000000,
+ "tune_tokens": 15000000,
+ "projected_hours_by_main_millions": {
+  "60": 5.24,
+  "65": 5.56,
+  "70": 5.87,
+  "75": 6.18,
+  "80": 6.5,
+  "85": 6.81,
+  "90": 7.13,
+  "95": 7.44,
+  "100": 7.75,
+  "105": 8.07,
+  "110": 8.38,
+  "115": 8.7,
+  "120": 9.01
+ },
+ "throughput": {
+  "adamw": {
+   "islands": 176903,
+   "dp": 183943
+  },
+  "muon": {
+   "islands": 167409,
+   "dp": 182314
+  }
+ },
+ "reduced": true,
+ "stop": false,
+ "why": "Rule in decision_rule.json: largest multiple of 5M at or below 120M whose projected L40S hours, with the 8-run extension, are at most 5.4."
+}

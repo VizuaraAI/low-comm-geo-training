@@ -1,0 +1,12 @@
+{
+ "eta": 0.4,
+ "beta": 0.8,
+ "table": {
+  "tuneo_adamw_R3a_e0.7_b0.9": 7.627964382591579,
+  "tuneo_adamw_R3a_e1_b0": 6.940352576119559,
+  "tuneo_adamw_R3a_e0.4_b0.8": 6.876897667349148
+ },
+ "best_key": "tuneo_adamw_R3a_e0.4_b0.8",
+ "used_anchor": true,
+ "differs_from_anchor": false
+}

@@ -1,0 +1,55 @@
+{
+  "written_at": "2026-11-04, IST, before the dataset was downloaded, before the speed profile and before any run of this experiment",
+  "status": "Fixed by the run agent from exp01-plan.md under the task brief. The plan says the rule is to be fixed with the project lead; he has not reviewed this file. Where the plan leaves a definition open, this file fills it in, and each such choice is listed under choices_not_in_the_plan. analyze.py refuses to run if this file's SHA-256 differs from logs/decision_rule_sha256_at_write.log.",
+  "question": "On eight simulated islands with GPU speeds measured on Modal, does the ranking of three aggregation rules differ between AdamW and Muon?",
+  "source": "exp01-plan.md, sections Design, Metrics, and Predictions and gates.",
+  "fleet": "Two workers each of L4, A10, L40S and H100. v_i is steps per second of this exact model at batch 32, measured separately for each optimizer on each GPU type. Each optimizer uses its own v_i for its schedule and clock.",
+  "rules": {
+    "R1": "H_i = 30 for all; uniform weights.",
+    "R2": "H_i = floor(30 v_i / v_max), at least 1; w_i = H_i / sum H_j applied to Delta_i.",
+    "R3": "Schedule as R2. d_i = Delta_i / H_i. s_i^2 is an EMA (decay 0.9, initialized at the first measurement) of the squared distance between d_i and the previous round's aggregate rate. u_i proportional to 1 / s_i^2, clipped to within a factor of 4 of uniform and normalized (repeated until both hold). Uniform in round 1. Aggregate = H_eff sum u_i d_i, H_eff = sum H_i^2 / sum H_i."
+  },
+  "runs": {
+    "main": "2 optimizers x 3 rules x seeds 1, 2, 3, plus 2 data-parallel runs x 3 seeds. Paired seeds share the initial weights and every worker's data stream.",
+    "tokens": "120M per main run and 30M per tuning run, unless the smoke test forces a reduction under budget_rule. All token fractions below are fractions of the main budget actually used.",
+    "tuning": "Tuning seed 100. Inner learning rate on data-parallel by validation loss at the end of the tuning budget: AdamW {3e-4, 6e-4, 1.2e-3, 2.4e-3}; Muon matrices {0.01, 0.02, 0.04, 0.08}, with its AdamW part at the AdamW choice. Outer (eta, beta) in {(0.7, 0.9), (1.0, 0.0), (0.4, 0.8)} per cell, same criterion."
+  },
+  "budget_rule": "Hard stop is 5.5 L40S hours. After the smoke test, project total L40S hours from measured throughput: smoke plus tuning plus main plus the 8-run extension. If the projection is at most 5.4 hours, keep 120M. Otherwise take the largest main budget that is a multiple of 5M and fits, with tuning at one quarter of it. If that is below 60M, stop and report.",
+  "target": {
+    "primary": "The common target loss is the mean over seeds 1, 2, 3 of the AdamW data-parallel validation loss at 50% of the main budget (linear interpolation on each curve). It is written to target.json by the job, before any DiLoCo run starts.",
+    "fallback": "If any cell (optimizer, rule, seed) in the main table fails to reach the primary target within its budget, the same computation at 25% of the budget is used for all cells, and we say so. If a cell fails the fallback too, that cell is reported as unmeasured and no extrapolation is used.",
+    "own_target": "Secondary: each optimizer's own data-parallel loss at 50% of the budget."
+  },
+  "metrics": {
+    "time_to_target": "First crossing of the target on the validation curve, linear interpolation in tokens between the two validation points around it, converted to simulated time as (tokens / tokens per round) x (max_i(H_i / v_i) + c).",
+    "c": "c = k x 30 / v_max, where v_max belongs to that optimizer, for k in 0, 0.1 and 1. k = 0.1 is the headline for G1. g does not depend on k, because R2 and R3 share a schedule.",
+    "dollars": "Sum of list prices over all eight workers times simulated time.",
+    "validation_at_budget": "Validation loss at the main budget, linear interpolation."
+  },
+  "predictions": {
+    "P1": "R2 and R3 reach the target sooner than R1 in simulated time for both optimizers, and R2 and R3 have higher validation loss than R1 at the main budget.",
+    "P2": "g(opt) = log(time R2 / time R3), and g(AdamW) > g(Muon).",
+    "P3": "Over the second half of rounds of the R2 main runs, regress log(||Delta_i|| / H_i) on log H_i across workers and rounds. P3 holds if the absolute slope, averaged over seeds, is smaller for Muon than for AdamW."
+  },
+  "gates": {
+    "G0": "Both data-parallel optimizers stable: all seeds finite and validation loss at the budget below validation loss at 50% of the budget. Equal-speed control: R2's final weights are bit-identical to R1's for each optimizer, and R3's mean over rounds of max_i |8 u_i - 1| is at most 0.25. Failing this stops the experiment; a failing cell is reported as unmeasured.",
+    "G1": "For each optimizer, at k = 0.1, min(mean time R2, mean time R3) <= 0.8 x mean time R1, means over seeds 1, 2, 3. If this fails, add a severe profile within the cap before any conclusion: v_i scaled so that v_max / v_min = 10, keeping log-speed proportions, R2 and R3 only. If the cap does not allow it, say so and draw no conclusion about the rules.",
+    "G2": "For each seed s, I_s = g_s(AdamW) - g_s(Muon). I = mean I_s. sigma_g = square root of the mean of the two per-optimizer sample variances (ddof 1) of g over seeds. SIGNAL if all I_s have the same sign and |I| > 2 sigma_g. The sign of I is reported either way; a signal with I < 0 is the opposite of P2 and is labelled so. If there is no signal, add seeds 4 and 5 on R2 and R3 for both optimizers, and apply the same test to all five seeds. This extension runs only if the guard allows it."
+  },
+  "outcomes": {
+    "SIGNAL": "Go to the main study with a whitening arm.",
+    "NO_SIGNAL_AFTER_FIVE": "The claim becomes: the rule and the optimizer can be chosen separately at this scale. Test it again at 124M before believing it.",
+    "R3_WORSE": "If the mean time of R3 is longer than the mean time of R2 for both optimizers, drop R3 and compare schedules and existing weights. This can hold together with either outcome above."
+  },
+  "choices_not_in_the_plan": [
+    "The target fraction (50%, then 25%), because the plan says only that the target comes from the AdamW data-parallel curve. The data-parallel final loss may be out of reach for DiLoCo at this budget.",
+    "The numeric reading of G0 stability and of 'close to uniform' (0.25).",
+    "k = 0.1 as the headline for G1, and the pooled definition of the seed standard deviation of g.",
+    "The regression definition of P3.",
+    "The learning rate grids, AdamW betas (0.9, 0.95), weight decay 0.01, gradient clip 1.0, Muon momentum 0.95, and a linear warmup over the first 4M global tokens. No learning rate decay, so the clock does not depend on the budget.",
+    "The severe profile in G1 (ratio 10).",
+    "The smoke control runs six full rounds, not 1M tokens, because one R1 round is 1.97M tokens and R3's weights cannot leave uniform before round two.",
+    "Each optimizer uses its own measured speeds. R2 and R3 still share a schedule within an optimizer, so g is unaffected."
+  ],
+  "budget": "Plan about 10.60 USD, hard stop 13.55 USD on Modal."
+}

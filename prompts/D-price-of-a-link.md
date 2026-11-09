@@ -1,0 +1,15 @@
+Ablation D: what a slow link does to the ranking, from our logs alone. This one needs no GPU and runs on a laptop in seconds.
+
+Read README.md and docs/exp01-results.md first. Write ablations/d_links.py using only numpy, matplotlib and the JSONL logs in results/exp01/runs and results/exp02/runs. Do not modify anything in results/exp01 or results/exp02.
+
+The question: the clock charges each round max_i(H_i / v_i) + c, with c = k * 30 / v_max. Our lab notes report k up to 1. A real link between clouds may be much slower than that. Since c is applied after the run, we can reprice every logged run without training anything. At what link cost does the ranking of the rules change, and what would it take for the mixed fleet to be the wrong purchase?
+
+Step 1. For R1, R2 and R3b under AdamW and Muon, seeds 1, 2, 3, read the tokens at which each run first crosses the target 5.7323, using linear interpolation between validation points as in docs/exp01-results.md. Convert those tokens to rounds, using the run's H and 8,192 tokens per step, and compute the simulated time to target at k in {0, 0.1, 0.3, 1, 3, 10, 30}. First confirm that you reproduce the times in the main table of docs/exp01-results.md at k = 0, 0.1 and 1. If you do not, stop and tell me.
+
+Step 2. Find, for each optimizer and seed, the crossover k at which R1 overtakes R2 in simulated time. Each rule's time is linear in k, so this has a closed form. R2 needs more rounds to the target and each round costs less compute, so the two lines cross. Report the crossover with its range over seeds, and convert it to a link speed: one pseudo-gradient is 30,018,816 parameters at 4 bytes, about 120 MB, and c is its transfer time if we ignore latency and compression. State both assumptions.
+
+Step 3. Add the data-parallel runs (dp_adamw_s*, dp_muon_s*) as a baseline that communicates every step. Price two versions. On the full fleet, a step takes the slowest worker's time plus c. On two H100s alone with the same global batch, assume a step takes four times as long as at batch 32, since each H100 now holds 128 sequences; this is an assumption, so label it. Compute simulated time and dollars to target at each k, with the list prices in islands.py and all rented GPUs paid while they wait.
+
+Step 4. Write the answer to two questions, with numbers: over what range of link costs does equal time beat equal steps on this fleet; and over what range does the mixed fleet cost less than two H100s alone to reach this target? Then say what a reader should not conclude. This is a small model early in training, the target is one loss value, compression and overlap are left out, and everything here is computed after the fact, so all of it is post hoc analysis of runs designed for another purpose. It suggests which link speeds the live measurements should cover, and it cannot replace them.
+
+Save results/ablations/D/table.csv, results/ablations/D/time_vs_k.png (log-log, one panel per optimizer, one line per rule, seeds visible) and results/ablations/D/NOTES.md, and finish by printing the main table and three bullet points with the key numbers.

@@ -1,0 +1,27 @@
+{
+ "gpu": "A10",
+ "code_sha256": "d55ef0a938637182551b4519be4546166bcdb081d991f19281dd222ebfe7ac9e",
+ "batch": 32,
+ "block": 256,
+ "torch": "2.10.0+cu128",
+ "cuda_name": "NVIDIA A10G",
+ "driver": "610.57.04",
+ "opts": {
+  "adamw": {
+   "steps": 800,
+   "seconds": 75.67,
+   "steps_per_s": 10.573,
+   "chunk_min": 10.567,
+   "chunk_max": 10.577,
+   "peak_gib": 6.28
+  },
+  "muon": {
+   "steps": 750,
+   "seconds": 75.22,
+   "steps_per_s": 9.971,
+   "chunk_min": 9.967,
+   "chunk_max": 9.978,
+   "peak_gib": 6.28
+  }
+ }
+}

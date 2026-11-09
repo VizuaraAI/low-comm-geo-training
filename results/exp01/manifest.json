@@ -1,0 +1,26 @@
+{
+ "dataset": "HuggingFaceFW/fineweb-edu",
+ "revision": "87f09149ef4734204d70ed1d046ddc9ca3f2b8f9",
+ "licence": "odc-by",
+ "tokenizer": "openai-community/gpt2",
+ "tokenizer_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+ "files": [
+  {
+   "file": "data/CC-MAIN-2013-20/train-00000-of-00014.parquet",
+   "rows_read": 146000,
+   "bytes": 2369456837,
+   "sha256": "fb989c566f6fba00ab61decc5f7aa1538a07d9b142e58a52ff790154528ffd03"
+  }
+ ],
+ "docs_read": 146000,
+ "val_docs": 1773,
+ "train_docs": 142564,
+ "train_tokens": 150000000,
+ "val_tokens": 2000000,
+ "split_seed": 9009,
+ "shards": 8,
+ "tokens_per_shard": 18750000,
+ "train_sha256": "64c0c6446404794a8fbb6da36d55d21e2151315f9e72bfec83942654406f58f1",
+ "val_sha256": "7a4846084912fad0c9b7391fd1a7520970339c222389651bc20732b9c5e0a1b8",
+ "code_sha256": "d55ef0a938637182551b4519be4546166bcdb081d991f19281dd222ebfe7ac9e"
+}

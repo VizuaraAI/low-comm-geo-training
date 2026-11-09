@@ -1,0 +1,27 @@
+{
+ "gpu": "L40S",
+ "code_sha256": "d55ef0a938637182551b4519be4546166bcdb081d991f19281dd222ebfe7ac9e",
+ "batch": 32,
+ "block": 256,
+ "torch": "2.10.0+cu128",
+ "cuda_name": "NVIDIA L40S",
+ "driver": "610.57.04",
+ "opts": {
+  "adamw": {
+   "steps": 1625,
+   "seconds": 75.35,
+   "steps_per_s": 21.566,
+   "chunk_min": 21.502,
+   "chunk_max": 21.668,
+   "peak_gib": 6.28
+  },
+  "muon": {
+   "steps": 1525,
+   "seconds": 75.01,
+   "steps_per_s": 20.33,
+   "chunk_min": 20.286,
+   "chunk_max": 20.385,
+   "peak_gib": 6.28
+  }
+ }
+}

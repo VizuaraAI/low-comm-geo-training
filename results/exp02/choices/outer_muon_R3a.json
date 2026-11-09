@@ -1,0 +1,12 @@
+{
+ "eta": 0.4,
+ "beta": 0.8,
+ "table": {
+  "tuneo_muon_R3a_e0.7_b0.9": 6.778286873836488,
+  "tuneo_muon_R3a_e1_b0": 6.147474303101492,
+  "tuneo_muon_R3a_e0.4_b0.8": 5.900746557935958
+ },
+ "best_key": "tuneo_muon_R3a_e0.4_b0.8",
+ "used_anchor": true,
+ "differs_from_anchor": false
+}

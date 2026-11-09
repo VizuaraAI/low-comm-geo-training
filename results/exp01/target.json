@@ -1,0 +1,45 @@
+{
+ "main_tokens": 60000000,
+ "code_sha256": "77dec35fc0f4d1db139ebc85de5d7004f4c86f701d2d9c9eb8348b5e303d97a6",
+ "written": 1793761592.422696,
+ "primary": {
+  "optimizer": "adamw",
+  "fraction_of_main": 0.5,
+  "loss": 5.056666016944148,
+  "per_seed": [
+   5.048265534644443,
+   5.072062448171347,
+   5.049670068016653
+  ]
+ },
+ "fallback": {
+  "optimizer": "adamw",
+  "fraction_of_main": 0.25,
+  "loss": 5.73225893749819,
+  "per_seed": [
+   5.71757833762481,
+   5.753254752548742,
+   5.725943722321015
+  ]
+ },
+ "own_adamw": {
+  "optimizer": "adamw",
+  "fraction_of_main": 0.5,
+  "loss": 5.056666016944148,
+  "per_seed": [
+   5.048265534644443,
+   5.072062448171347,
+   5.049670068016653
+  ]
+ },
+ "own_muon": {
+  "optimizer": "muon",
+  "fraction_of_main": 0.5,
+  "loss": 4.727505837467824,
+  "per_seed": [
+   4.733472644414319,
+   4.73052345621495,
+   4.718521411774202
+  ]
+ }
+}

@@ -1,0 +1,89 @@
+{
+  "written_at": "2026-11-04, about 10:50 IST, before any Exp02 smoke run, tuning run or main run. Exp01's logs had already been read, including the s_i^2 values of its R3 runs.",
+  "status": "Fixed by the run agent under the task brief. the project lead has not reviewed this file. analyze.py refuses to run if this file's SHA-256 differs from logs/decision_rule_sha256_at_write.log.",
+  "question": "Exp01's R3 changed two things at once against R2: a per-step normalization and inverse-noise weights. Which one caused R3's loss, does inverse-noise weighting itself do anything on i.i.d. shards, and does the answer depend on the inner optimizer?",
+  "reused_from_exp01": "Exp01's cloud volume, read only: data files, per-GPU speed profiles, inner learning rates (AdamW 0.0024; Muon 0.04 with AdamW part 0.0024), the fallback target 5.73225893749819, the 60M token budget, the 15M tuning budget, validation every 2.5M tokens, the outer grid, seeds, model, batch, warmup, the lock file. New files go under exp02/ on that volume.",
+  "arms": {
+    "notation": "H_i is R2's schedule for that optimizer (AdamW 4,4,6,6,13,13,30,30; Muon 5,5,7,7,15,15,30,30). Delta_i = theta_t - theta_i. d_i = Delta_i / H_i. c_i is the weight on Delta_i, so the aggregate is sum c_i Delta_i, followed by the same Nesterov outer step as Exp01.",
+    "R2": "c_i = H_i / sum H_j. Control, same lines as Exp01.",
+    "R3a": "c_i = (1/8) H_eff / H_i with H_eff = sum H_j^2 / sum H_j. This is R3 with u_i fixed at 1/8. The c_i sum to about 2.79 (AdamW) and 2.33 (Muon), so R3a changes both the split between workers and the size of the step. The outer grid can partly absorb the size. We cannot separate those two within this arm.",
+    "R3b": "s_i^2 is R3's estimator with no change: an EMA (decay 0.9, initialized at the first measurement) of the squared distance between d_i and the previous round's reference rate r = sum u_j d_j. u_i is proportional to 1 / s_i^2, clipped to within a factor of 4 of uniform and normalized, uniform in round 1, exactly as R3. Then c_i = H_i u_i / sum H_j u_j. There is no H_eff and the c_i sum to 1. We keep R3's reference r and do not use the token-weighted rate, so that the estimator is the one Exp01 tested."
+  },
+  "not_run": "No arm beyond R3a and R3b, and R2 as a control. R1 and R3 are read from Exp01's logs for reference only.",
+  "controls": {
+    "reuse_rule": "The code must change, because run_islands has to learn two rules, so the code hash will differ from 77dec35f. Exp01's R1, R2 and R3 logs are therefore not reused without a bridge. Bridge: rerun R2 at seed 1 for both optimizers at Exp01's tuned settings and 60M tokens.",
+    "bridge_passes_if": "For each optimizer, either the final weight hash equals Exp01's seed 1 hash, or |L_new(seed 1) - L_exp01(seed 1)| is at most the sample SD of Exp01's three R2 seeds at 60M. The comparison is paired with seed 1 because a seed 1 value can lie more than one SD from the three-seed mean even when it is an exact repeat. The distance from the three-seed mean is reported as well.",
+    "if_bridge_passes": "All R2 contrasts use Exp01's R2 logs for seeds 1, 2, 3. R1 and R3 from Exp01 may be listed for reference.",
+    "if_bridge_fails": "Rerun R2 at seeds 2 and 3 on the failing optimizer under the Exp02 code, if the budget allows, and use only Exp02's R2 in contrasts on that optimizer. If the budget does not allow, contrasts on that optimizer are reported as unbridged.",
+    "settings_match": "Every Exp02 R2 header field (optimizer, H, lr, aux_lr, eta, beta, budget, eval_every, speeds, fleet, model, batch, workers, betas, weight decay, clip, warmup, torch version, GPU name) is compared with Exp01's seed 1 header, and differences are listed.",
+    "zero_delta": "Exp01's first smoke attempt had every Delta_i at exactly zero. Every round of every run now asserts min ||Delta_i|| > 0 and that no two workers have identical Delta_i. In R3b, from round 3 on, if max s_i^2 / min s_i^2 > 1.001 the run asserts that max |8 u_i - 1| > 1e-6 and that max |c_i / token weight - 1| > 1e-6. A failed assert stops the container.",
+    "negative_control": "Smoke injects Exp01's actual bug (torch.nn.utils.vector_to_parameters) into one short run and requires the zero-Delta assert to fire. Exp01's own control passed on broken code, so this one is tested against the broken code. A unit test feeds the weight assert uniform u with differing s_i^2 and requires it to fire.",
+    "smoke_gate": "Before tuning, all must hold: self tests pass; the injected bug is caught; at equal speeds (H = 10 for all) R3a's final weights are bit-identical to R2's for each optimizer; at equal speeds R3b's final weights differ from R2's (its weights are in use) while its mean of max |8 u_i - 1| is at most 0.25; on the real fleet R3b's u_i leave uniform; the data hashes match Exp01's manifest; the schedule H matches Exp01's. Also recorded, not gated: whether R2's per-round norms over four real-fleet rounds equal Exp01's seed 1 values exactly."
+  },
+  "tuning": {
+    "procedure": "As Exp01: outer (eta, beta) in {(0.7, 0.9), (1.0, 0.0), (0.4, 0.8)}, seed 100, 15M tokens, per optimizer and arm, picked by validation loss at the end of the tuning budget.",
+    "anchor": "To keep each contrast to one change where the data allow: R3b's anchor is R2's setting (1.0, 0.0). R3a's anchor is R3's setting (0.4, 0.8). If the anchor's tuning loss is within 0.02 of the best, the anchor is used. Otherwise the best is used, and the contrast is flagged as mixing the rule with the outer step."
+  },
+  "main_runs": "Seeds 1, 2, 3 for R3a and R3b under both optimizers at 60M tokens, plus the R2 bridge at seed 1. Paired seeds share initial weights and every worker's data stream. Validation losses are not printed by the jobs.",
+  "primary_measure": {
+    "L": "L(arm, opt, seed) is the validation loss at the main budget, by linear interpolation in tokens, as Exp01's validation_at_budget. R2, R3a and R3b share a schedule within an optimizer, so equal tokens means equal simulated time at any k.",
+    "missed_target": "Missing a target has no effect on the primary measure, since no target enters it. This is what makes the interaction defined this time.",
+    "diverged_run": "A run that diverges or has no finite validation loss at the budget gets L = ln(50257) = 10.825, the loss of a uniform predictor, and is flagged. It stays in every contrast.",
+    "unfinished_run": "A run stopped by the budget guard is not imputed. Contrasts use the seeds that are complete for that contrast and say so. Fewer than 2 complete seeds means the contrast is reported as unmeasured."
+  },
+  "contrasts": {
+    "gain": "G_x(opt, s) = L(R2, opt, s) - L(x, opt, s) for x in R3a, R3b. Positive means the arm is better than R2. The sign matches Exp01's g.",
+    "delta": "delta = 0.02 nats. The R2 curves near 60M fall 0.0109 per million tokens (AdamW, seed 1) and 0.0056 (Muon, seed 1), so 0.02 is about 2M to 4M tokens, or 3 to 6 percent of the budget. Smaller gaps are below what this design should call an effect.",
+    "effect_test": "For one arm and optimizer. HELPS if all seeds have G > 0, mean G >= delta and mean G > 2 SD(G). HURTS is the mirror image. Otherwise NO_EFFECT_DETECTED, with the mean and range reported.",
+    "interaction_primary": "I_s = G_R3b(AdamW, s) - G_R3b(Muon, s). I = mean I_s. sigma_g = square root of the mean of the two per-optimizer sample variances (ddof 1) of G over seeds, as Exp01's G2. SIGNAL if all I_s have the same sign, |I| > 2 sigma_g and |I| >= delta. The plan's P2 direction is I > 0, that is AdamW gains more than Muon. The sign is reported either way.",
+    "interaction_secondary": "The same test for R3a.",
+    "normalization_share": "For each optimizer, share_s = (L(R3a, s) - L(R2, s)) / (L(R3, s) - L(R2, s)) with R3 from Exp01. NORMALIZATION_EXPLAINS_R3 if R3a's effect test says HURTS and mean share_s >= 0.75.",
+    "secondary_time": "Time to the fallback target 5.7323 at k = 0, 0.1, 1, and g = log(time R2 / time x). A run that misses is censored at its end of budget, and any g or I that uses a censored run is labelled a bound and does not enter a verdict."
+  },
+  "noise_readouts": {
+    "why": "On i.i.d. shards every worker draws from the same distribution with the same batch. Worker identity therefore carries no information about noise except through H_i, and two workers with the same GPU have the same H_i. If s_i^2 only tracks H_i, then R3b is a fixed tilt of the token weights by H and not an adaptive noise estimate. Workers of the same GPU type give an estimate of noise that does not depend on the reference: N(H) = ||d_a - d_b||^2 / 2.",
+    "computed_over": "Second half of rounds, per seed, on R3b main runs, and shadow values on R2 and R3a. All come from the logged matrix of inner products D D^T and logged s_i^2.",
+    "A": "Mean over rounds of max |8 u_i - 1|.",
+    "B": "Between-group ratio: max over GPU types of mean s^2, over min over GPU types of mean s^2.",
+    "C": "Within-pair ratio: for each same-GPU pair, mean s^2 larger over smaller. Reported per pair, and the maximum over pairs.",
+    "D": "N(H) for each GPU type, and N(H_min) / N(H_max).",
+    "E": "Relative step change of R3b against R2 on the same Deltas: ||sum (c_i - w_i) Delta_i|| / ||sum w_i Delta_i||, with w_i the token weights.",
+    "F": "Share of the weight on Delta_i that the H100 pair holds, and n_eff = 1 / sum c_i^2, for R3b against R2.",
+    "H_ONLY": "Holds for an optimizer if C is at most 1.10 for every pair in every seed: s_i^2 then separates workers only through H_i.",
+    "HARDLY_DIFFER": "Holds for an optimizer if mean A is at most 0.25, the bound Exp01 used for close to uniform, and mean E is at most 0.10: the weights and the step then stay close to R2's."
+  },
+  "expectations_written_in_advance": {
+    "from_exp01_logs": "Exp01's R3 logs show same-GPU pairs with nearly equal s_i^2 (for AdamW 5.92 and 5.89, 5.02 and 5.02; seed 1, second half). Mean pairwise cosine of the Delta_i in R2 is low (0.14 AdamW, 0.05 Muon), so most of each Delta_i is noise.",
+    "H_ONLY": "We expect H_ONLY to hold under both optimizers. Then on this setup inverse-noise weighting has no worker-specific information to use.",
+    "HARDLY_DIFFER": "We do not expect this to be clear. On R2's trajectory the per-step rates are 2.63 (L4) to 1.76 (H100) for AdamW, so s_i^2 could differ by about 2.2x, which would move 8 u_i to roughly 0.7 to 1.6 and E to roughly 0.2. So R3b could tilt weight toward the H100 pair without being near uniform. The effect of that tilt on loss is an open question.",
+    "theory": "Suppose Delta_i = H_i r + e_i with independent e_i. The weights with least noise for a common rate r are equal weights on Delta_i, and token weights are already heavier on long runs than that. Inverse-noise weights computed on per-step rates push further toward long runs, since a short run has a noisier rate. So on i.i.d. shards the rule moves weight in the direction that concentrates noise, and we do not expect a large gain from noise reduction. Any gain would come from the long runs being better steps for other reasons.",
+    "R3a": "We expect R3a to hurt under both optimizers and to carry most of R3's penalty, since u_i stayed close to uniform in Exp01."
+  },
+  "outcomes": {
+    "R3b_HELPS_either": "Inverse-noise weights on top of token weights improved loss at the budget under that optimizer. Say whether H_ONLY holds; if so, the gain belongs to a fixed tilt by H and not to adaptive noise estimation. Keep a weighted arm in the main study, and test the same tilt written as a fixed function of H before crediting the noise estimate.",
+    "R3b_NO_EFFECT_both": "On i.i.d. shards at this scale, inverse-noise weights add nothing detectable to token weights. The paper may not claim a benefit. This does not reject the idea where noise truly differs between workers, because this setup has no such difference.",
+    "R3b_HURTS_both": "Drop this estimator on i.i.d. shards. Say that the rule tilts toward long runs, and that heterogeneous noise remains untested.",
+    "INTERACTION_SIGNAL": "The optimizer and the weighting rule cannot be chosen separately at this scale, in the direction measured. If I < 0, say that it is the opposite of P2.",
+    "INTERACTION_NO_SIGNAL": "Report I with its seed values. At this scale there is no evidence that the optimizer and this weighting rule need to be chosen together. Three or five seeds can miss a small interaction, and this must be said.",
+    "NORMALIZATION_EXPLAINS_R3": "R3's loss in Exp01 belongs to its normalization and not to inverse-noise weights. Exp01's R3_WORSE outcome applies to R3 as written and does not reach the weighting idea."
+  },
+  "cut_rule": {
+    "written": "Written before any Exp02 result exists. It uses throughput and billed cost only, never validation loss.",
+    "projection": "After smoke, project spend = billed smoke + 2 container starts of 120 s + tuning and main runs at measured tokens per second, with validation time from smoke, at 0.00063 USD per L40S second, the L40S price with 4 CPU cores and 16 GiB.",
+    "steps": [
+      "Keep 60M tokens, 3 seeds for all arms, if the projection without the extension is at most 7.50 USD.",
+      "Otherwise drop R3a seed 3 on both optimizers.",
+      "If still above 7.50, main budget 45M tokens for all arms, with all control comparisons read at 45M from Exp01's curves. Tuning stays at 15M.",
+      "If still above 7.50, main budget 30M tokens, likewise.",
+      "If still above 7.50, stop and report."
+    ],
+    "guard": "Each container gets a time limit such that our estimate times 1.03 stays under 8.60 USD in total. Exp01's billing ran 2 percent above our estimate. Billed cost is read during the run, and all our apps are stopped at 8.60 billed. 9.00 USD is the hard stop in the brief.",
+    "order_in_container": "Tuning R3b, tuning R3a, R2 bridge seed 1, then for seeds 1, 2, 3: R3b, then R3a. So a stop loses R3a seed 3 first."
+  },
+  "extension": {
+    "when": "After the three-seed analysis, add seeds 4 and 5 on R2 and R3b under both optimizers (8 runs) only if there is a hint worth resolving: for R3b the interaction test did not fire but all I_s share a sign and |I| >= delta; or for one optimizer all G_R3b share a sign and |mean G| >= delta but the effect test did not fire. All other cases stop at three seeds.",
+    "budget": "Only if billed spend plus the projected cost of those 8 runs is at most 8.00 USD. If only seed 4 fits (4 runs), run seed 4. Otherwise do not extend and say so.",
+    "analysis": "The same tests over all seeds run. R2 for seeds 4 and 5 comes from Exp02, since Exp01 did not run them."
+  },
+  "budget": "Plan about 5.50 USD on Modal, at most 8.00, hard stop 9.00. Exp01's cloud volume reused under exp02/."
+}

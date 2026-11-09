@@ -1,0 +1,27 @@
+{"t": "header", "key": "dp_muon_s3", "code_sha256": "77dec35fc0f4d1db139ebc85de5d7004f4c86f701d2d9c9eb8348b5e303d97a6", "kind": "dp", "opt": "muon", "lr": 0.04, "aux_lr": 0.0024, "seed": 3, "budget": 60000000, "eval_every": 2500000, "model": {"n_layer": 6, "n_head": 6, "n_embd": 384, "block": 256, "vocab": 50257}, "batch_per_worker": 32, "n_workers": 8, "betas": [0.9, 0.95], "weight_decay": 0.01, "clip": 1.0, "warmup_tokens": 4000000, "torch": "2.10.0+cu128", "cuda_name": "NVIDIA L40S", "driver": "610.57.04"}
+{"t": "val", "tokens": 0, "step": 0, "val_loss": 10.890632728033657, "wall": 0.0}
+{"t": "val", "tokens": 2555904, "step": 39, "val_loss": 6.867008701935831, "train_loss": 6.8890380859375, "wall": 22.6}
+{"t": "val", "tokens": 5046272, "step": 77, "val_loss": 6.205012713831263, "train_loss": 6.168638229370117, "wall": 40.6}
+{"t": "val", "tokens": 7536640, "step": 115, "val_loss": 5.810773040353489, "train_loss": 5.768610000610352, "wall": 58.6}
+{"t": "val", "tokens": 10027008, "step": 153, "val_loss": 5.509559655763281, "train_loss": 5.450921058654785, "wall": 77.3}
+{"t": "val", "tokens": 12517376, "step": 191, "val_loss": 5.313972729508595, "train_loss": 5.216712474822998, "wall": 95.3}
+{"t": "val", "tokens": 15007744, "step": 229, "val_loss": 5.166598637898763, "train_loss": 5.112624168395996, "wall": 113.3}
+{"t": "val", "tokens": 17563648, "step": 268, "val_loss": 5.0384594426054985, "train_loss": 4.9884467124938965, "wall": 131.7}
+{"t": "val", "tokens": 20054016, "step": 306, "val_loss": 4.943433161948927, "train_loss": 4.9306321144104, "wall": 149.7}
+{"t": "val", "tokens": 22544384, "step": 344, "val_loss": 4.870256795556009, "train_loss": 4.805818557739258, "wall": 167.8}
+{"t": "val", "tokens": 25034752, "step": 382, "val_loss": 4.81077537961453, "train_loss": 4.797980785369873, "wall": 185.8}
+{"t": "val", "tokens": 27525120, "step": 420, "val_loss": 4.765278582321456, "train_loss": 4.6900954246521, "wall": 204.7}
+{"t": "val", "tokens": 30015488, "step": 458, "val_loss": 4.71822880160424, "train_loss": 4.7076897621154785, "wall": 222.6}
+{"t": "val", "tokens": 32505856, "step": 496, "val_loss": 4.688441723600389, "train_loss": 4.681317329406738, "wall": 240.6}
+{"t": "val", "tokens": 35061760, "step": 535, "val_loss": 4.650263726497636, "train_loss": 4.5595550537109375, "wall": 258.9}
+{"t": "val", "tokens": 37552128, "step": 573, "val_loss": 4.620515401950569, "train_loss": 4.584756851196289, "wall": 276.8}
+{"t": "val", "tokens": 40042496, "step": 611, "val_loss": 4.599968920716004, "train_loss": 4.542108535766602, "wall": 294.8}
+{"t": "val", "tokens": 42532864, "step": 649, "val_loss": 4.575820402310435, "train_loss": 4.494869709014893, "wall": 312.8}
+{"t": "val", "tokens": 45023232, "step": 687, "val_loss": 4.553878301971092, "train_loss": 4.489787578582764, "wall": 331.8}
+{"t": "val", "tokens": 47513600, "step": 725, "val_loss": 4.532300983278555, "train_loss": 4.509372711181641, "wall": 349.9}
+{"t": "val", "tokens": 50003968, "step": 763, "val_loss": 4.509457285686206, "train_loss": 4.461639881134033, "wall": 368.0}
+{"t": "val", "tokens": 52559872, "step": 802, "val_loss": 4.494113637432952, "train_loss": 4.4356489181518555, "wall": 386.3}
+{"t": "val", "tokens": 55050240, "step": 840, "val_loss": 4.477818034455768, "train_loss": 4.433864116668701, "wall": 404.3}
+{"t": "val", "tokens": 57540608, "step": 878, "val_loss": 4.46040588150376, "train_loss": 4.378348350524902, "wall": 422.4}
+{"t": "val", "tokens": 60030976, "step": 916, "val_loss": 4.44642465223243, "train_loss": 4.423487663269043, "wall": 440.4}
+{"t": "end", "status": "ok", "tokens": 60030976, "steps": 916, "wall": 440.4, "train_seconds": 331.1, "tokens_per_s": 181327, "theta_sha256": "87ee676b47b2b3828cc2b98f2276ba874799ab67d67a4fda0f7d1f880c320c8e"}

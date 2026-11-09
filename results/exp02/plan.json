@@ -1,0 +1,36 @@
+{
+ "table": [
+  {
+   "main_tokens": 60000000,
+   "r3a_seeds": 3,
+   "projected_usd": 5.49
+  },
+  {
+   "main_tokens": 60000000,
+   "r3a_seeds": 2,
+   "projected_usd": 4.87
+  },
+  {
+   "main_tokens": 45000000,
+   "r3a_seeds": 2,
+   "projected_usd": 3.96
+  },
+  {
+   "main_tokens": 30000000,
+   "r3a_seeds": 2,
+   "projected_usd": 3.04
+  }
+ ],
+ "used_usd": 0.24235900000000002,
+ "tokens_per_s": 167278,
+ "val_seconds": 4.68,
+ "go": true,
+ "main_tokens": 60000000,
+ "seeds_R3a": [
+  1,
+  2,
+  3
+ ],
+ "projected_usd": 5.49,
+ "extension_8_runs_usd": 2.47
+}

@@ -1,0 +1,4 @@
+{"t": "header", "key": "tunei_muon_lr0.08", "code_sha256": "77dec35fc0f4d1db139ebc85de5d7004f4c86f701d2d9c9eb8348b5e303d97a6", "kind": "dp", "opt": "muon", "lr": 0.08, "aux_lr": 0.0024, "seed": 100, "budget": 15000000, "eval_every": 15000000, "model": {"n_layer": 6, "n_head": 6, "n_embd": 384, "block": 256, "vocab": 50257}, "batch_per_worker": 32, "n_workers": 8, "betas": [0.9, 0.95], "weight_decay": 0.01, "clip": 1.0, "warmup_tokens": 4000000, "torch": "2.10.0+cu128", "cuda_name": "NVIDIA L40S", "driver": "610.57.04"}
+{"t": "val", "tokens": 0, "step": 0, "val_loss": 10.899168573155869, "wall": 0.0}
+{"t": "val", "tokens": 15007744, "step": 229, "val_loss": 5.436203513460408, "train_loss": 5.400242805480957, "wall": 91.3}
+{"t": "end", "status": "ok", "tokens": 15007744, "steps": 229, "wall": 91.3, "train_seconds": 82.8, "tokens_per_s": 181320, "theta_sha256": "4a1e8bd3e1ca0f58ec8e6d922a0a29503f3bcf0c72a2497efbfbf43893fb103f"}
